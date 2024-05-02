@@ -9,10 +9,11 @@ import {
 
 import { getNextAuthSession } from "@/auth";
 import { Separator } from "./ui/separator";
+import Link from "next/link";
 
 export default async function Nav() {
-  const data = await getNextAuthSession();
-  // console.log(data);
+  const session = await getNextAuthSession();
+  // console.log(session);
 
   return (
     <header className="sticky top-0 z-20  font-semibold  border-b">
@@ -24,24 +25,31 @@ export default async function Nav() {
         >
           <div>IoT PUT MONS EUNICE PROJECT</div>
         </a>
-        {data && data.user ? (
+        {session && session.user ? (
           <>
-            <ul className="flex gap-4 items-center">
+            <ul className="flex gap-8 items-center">
+              <li>
+                {session.user.isAdmin && (
+                  <Link href="/dashboard">Dashboard</Link>
+                )}
+              </li>
               <li>
                 <Popover>
                   <PopoverTrigger className="flex items-center gap-2">
+                    <span className="flex items-center">
+                      {session.user.name}
+                    </span>
                     <Avatar>
-                      {data.user?.image && (
+                      {session.user?.image && (
                         <AvatarImage
-                          src={data.user.image}
+                          src={session.user.image}
                           alt="profile picture"
                         />
                       )}
                       <AvatarFallback>
-                        {data.user.name?.charAt(0)}
+                        {session.user.name?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="flex items-center">{data.user.name}</span>
                   </PopoverTrigger>
                   <PopoverContent className="w-fit p-3 mt-1">
                     <div className="px-1 pb-1">Déconnexion</div>

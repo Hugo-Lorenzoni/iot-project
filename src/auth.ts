@@ -1,13 +1,11 @@
 import NextAuth, { Session, User, getServerSession } from "next-auth";
 import { Adapter } from "next-auth/adapters";
-// import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 import Github from "next-auth/providers/github";
 
 import { createId } from "@paralleldrive/cuid2";
 
-const prisma = new PrismaClient();
+import prisma from "@/db";
 
 export const AUTH_OPTIONS = {
   adapter: <Adapter>PrismaAdapter(prisma),
@@ -16,10 +14,22 @@ export const AUTH_OPTIONS = {
       clientId: process.env.GITHUB_ID!!,
       clientSecret: process.env.GITHUB_SECRET!!,
       allowDangerousEmailAccountLinking: true,
-      profile(profile) {
+      async profile(profile) {
         // console.log(profile);
         const { name, email, avatar_url } = profile;
         const image = avatar_url;
+        if (email) {
+          const user = await prisma.user.findUnique({ where: { email } });
+          if (user) {
+            return {
+              id: user.id,
+              isAdmin: user.isAdmin,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            };
+          }
+        }
         return {
           id: createId(),
           isAdmin: false,
