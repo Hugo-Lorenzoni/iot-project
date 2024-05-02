@@ -1,6 +1,8 @@
 "use client";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { AreaChart, Card, List, ListItem } from "@tremor/react";
+import { useSession } from "next-auth/react";
 
 const data = [
   {
@@ -89,43 +91,59 @@ const statusColor: StatusColor = {
 };
 
 export default function Home() {
+  const session = useSession();
+  // const session = { status: "loading" };
+  console.log(session);
+
   return (
-    <>
-      <main className="flex flex-col items-center justify-center">
-        <Card className="sm:max-w-4xl m-4 h-1/2">
-          <h3 className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-            Follower metrics
-          </h3>
-          <AreaChart
-            data={data}
-            index="date"
-            categories={["Organic", "Sponsored"]}
-            colors={["blue", "violet"]}
-            valueFormatter={valueFormatter}
-            showLegend={true}
-            showYAxis={true}
-            showGradient={true}
-            startEndOnly={true}
-            className="mt-6"
-          />
-          <List className="mt-2">
-            {summary.map((item) => (
-              <ListItem key={item.name}>
-                <div className="flex items-center space-x-2">
-                  <span
-                    className={cn(statusColor[item.name], "h-0.5 w-3")}
-                    aria-hidden={true}
-                  />
-                  <span>{item.name}</span>
-                </div>
-                <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                  {valueFormatter(item.value)}
-                </span>
-              </ListItem>
-            ))}
-          </List>
-        </Card>
-      </main>
-    </>
+    <main className="flex flex-col items-center justify-center flex-auto">
+      <div className="flex flex-row items-stretch w-full flex-auto justify-center">
+        <div className="sm:max-w-4xl m-4 min-h-1/2 w-full flex items-center">
+          {session.status === "loading" ? (
+            <>
+              <div className="border h-1/2 rounded-tremor-default shadow-tremor-card w-full p-4">
+                <Skeleton className="h-full w-full" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="border min-h-1/2 rounded-tremor-default shadow-tremor-card w-full p-4">
+                <h3 className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                  Follower metrics
+                </h3>
+                <AreaChart
+                  data={data}
+                  index="date"
+                  categories={["Organic", "Sponsored"]}
+                  colors={["blue", "violet"]}
+                  valueFormatter={valueFormatter}
+                  showLegend={true}
+                  showYAxis={true}
+                  showGradient={false}
+                  startEndOnly={true}
+                  className="mt-6"
+                />
+                <List className="mt-2">
+                  {summary.map((item) => (
+                    <ListItem key={item.name}>
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className={cn(statusColor[item.name], "h-0.5 w-3")}
+                          aria-hidden={true}
+                        />
+                        <span>{item.name}</span>
+                      </div>
+                      <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                        {valueFormatter(item.value)}
+                      </span>
+                    </ListItem>
+                  ))}
+                </List>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </main>
   );
 }

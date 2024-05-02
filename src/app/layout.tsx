@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import Nav from "@/components/Nav";
+import Providers from "@/components/Providers";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="min-h-lvh">
+      <body className={cn(inter.className, "min-h-lvh flex flex-col")}>
         <Nav />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
