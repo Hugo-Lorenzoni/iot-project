@@ -17,8 +17,7 @@ export const AUTH_OPTIONS = {
       clientSecret: process.env.GITHUB_SECRET!!,
       allowDangerousEmailAccountLinking: true,
       profile(profile) {
-        console.log(profile);
-
+        // console.log(profile);
         const { name, email, avatar_url } = profile;
         const image = avatar_url;
         return {
