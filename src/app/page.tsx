@@ -93,7 +93,14 @@ const statusColor: StatusColor = {
 export default function Home() {
   const session = useSession();
   // const session = { status: "loading" };
-  console.log(session);
+  // console.log(session);
+  if (!session || session.status === "unauthenticated") {
+    return (
+      <main className="flex flex-col items-center justify-center flex-auto">
+        <h1>Unauthenticated</h1>
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-col items-center justify-center flex-auto">

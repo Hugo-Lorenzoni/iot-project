@@ -12,7 +12,7 @@ import { Separator } from "./ui/separator";
 
 export default async function Nav() {
   const data = await getNextAuthSession();
-  console.log(data);
+  // console.log(data);
 
   return (
     <header className="sticky top-0 z-20  font-semibold  border-b">
