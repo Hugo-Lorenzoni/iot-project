@@ -1,12 +1,14 @@
 "use client";
 
+import getData from "@/lib/getData";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import { AreaChart, List, ListItem } from "@tremor/react";
 
 type Data = {
-  date: string;
-  Organic: number;
-  Sponsored: number;
+  time: string;
+  Temperature: number;
+  Humidity: number;
 }[];
 
 type Summary = {
@@ -19,8 +21,8 @@ interface StatusColor {
 }
 
 const statusColor: StatusColor = {
-  Organic: "bg-blue-500",
-  Sponsored: "bg-violet-500",
+  Temperature: "bg-blue-500",
+  Humidity: "bg-violet-500",
 };
 
 export default function Dashboard({
@@ -32,12 +34,21 @@ export default function Dashboard({
 }) {
   const valueFormatter = (number: number) =>
     `${Intl.NumberFormat("us").format(number).toString()}`;
+
+  const { data: result } = useQuery({
+    queryKey: ["data&summary"],
+    queryFn: async () => await getData(),
+    initialData: { data, summary },
+    staleTime: 10 * 1000,
+    refetchInterval: 10 * 1000,
+  });
+
   return (
     <>
       <AreaChart
-        data={data}
-        index="date"
-        categories={["Organic", "Sponsored"]}
+        data={result.data}
+        index="time"
+        categories={["Temperature", "Humidity"]}
         colors={["blue", "violet"]}
         valueFormatter={valueFormatter}
         showLegend={true}
@@ -47,7 +58,7 @@ export default function Dashboard({
         className="mt-6"
       />
       <List className="mt-2">
-        {summary.map((item) => (
+        {result.summary.map((item) => (
           <ListItem key={item.name}>
             <div className="flex items-center space-x-2">
               <span

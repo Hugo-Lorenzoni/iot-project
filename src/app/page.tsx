@@ -12,7 +12,9 @@ export default function Home() {
   } else if (session?.data?.user?.name) {
     return (
       <main className="flex flex-col items-center justify-center flex-auto">
-        <h1>Welcome back {session.data.user.name} !</h1>
+        <h1 className=" font-semibold text-lg">
+          Welcome back {session.data.user.name} !
+        </h1>
         <p>You are {session.data.user.isAdmin ? "Admin" : "not Admin"}</p>
       </main>
     );

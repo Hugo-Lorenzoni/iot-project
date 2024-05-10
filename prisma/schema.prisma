@@ -65,3 +65,9 @@ model VerificationToken {
  
   @@id([identifier, token])
 }
+
+model Data {
+  time         DateTime @id @default(now())
+  temperature  Float
+  humidity     Float
+}
