@@ -39,8 +39,8 @@ export default function Dashboard({
     queryKey: ["data&summary"],
     queryFn: async () => await getData(),
     initialData: { data, summary },
-    staleTime: 10 * 1000,
-    refetchInterval: 10 * 1000,
+    // staleTime: 10 * 1000,
+    refetchInterval: 100,
   });
 
   return (

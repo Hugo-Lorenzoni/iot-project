@@ -2,6 +2,11 @@ import { getNextAuthSession } from "@/auth";
 import Dashboard from "./Dashboard";
 import { redirect } from "next/navigation";
 import getData from "@/lib/getData";
+import { Button } from "@/components/ui/button";
+
+import mqtt from "mqtt";
+import { env } from "process";
+
 
 // const data = [
 //   {
@@ -80,6 +85,41 @@ import getData from "@/lib/getData";
 export default async function DashboardPage() {
   const session = await getNextAuthSession();
 
+  async function changeFanMode(formData: FormData){
+    'use server'
+    const options = {
+      username: env.MQTT_USER,
+      password: env.MQTT_PASSWORD
+    };
+
+    const mode = formData.get("mode")
+
+    if (!mode) {
+      return 
+    }
+  
+  const client = mqtt.connect("mqtt://localhost:1883", options);
+  
+  client.on('connect', () => {
+      console.log('Connected to the broker');
+    
+      const publishOptions = {
+        retain: true  // Retain flag
+      };
+      console.log(mode.toString());
+    
+      client.publish("esp/fanMode", mode.toString(), publishOptions, (err) => {
+        if (err) {
+          console.error('Failed to publish message', err);
+        } else {
+          console.log('Message published successfully');
+        }
+        
+        client.end();
+      });
+    });
+  }
+
   if (!session?.user.isAdmin) {
     redirect("/");
   }
@@ -95,6 +135,20 @@ export default async function DashboardPage() {
               Follower metrics
             </h3>
             <Dashboard data={data} summary={summary} />
+            <div className="flex justify-between mt-4">
+              <form action={changeFanMode}>
+                <input type="hidden" name="mode" value="1" />
+                <Button type="submit">Activate Fan</Button>
+              </form>
+              <form action={changeFanMode}>
+                <input type="hidden" name="mode" value="0" />
+                <Button variant="outline" type="submit">Automatic Fan</Button>
+              </form>
+              <form action={changeFanMode}>
+                <input type="hidden" name="mode" value="-1" />
+                <Button variant="destructive" type="submit">Stop Fan</Button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
