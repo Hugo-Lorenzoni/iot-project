@@ -32,5 +32,7 @@ export async function GET(request: NextRequest) {
     return new Response("Internal Server Error", { status: 500 });
   }
 
-  return new Response("ok", { status: 200 });
+  return new Response("Data successfully uploaded to the database", {
+    status: 200,
+  });
 }
